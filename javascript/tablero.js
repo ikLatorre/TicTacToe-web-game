@@ -24,85 +24,31 @@ function hacerMovimiento(posicion){
 }
 
 function bloquearTablero(){
-    var obj;
-    obj = document.getElementById("div00");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", null);
-
-    
-    obj = document.getElementById("div01");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", null);
-    
-    obj = document.getElementById("div02");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", null);
-    
-    obj = document.getElementById("div10");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", null);
-    
-    obj = document.getElementById("div11");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", null);
-    
-    obj = document.getElementById("div12");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", null);
-    
-    obj = document.getElementById("div20");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", null);
-    
-    obj = document.getElementById("div21");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", null);
-    
-    obj = document.getElementById("div22");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", null);
-    
-    obj = document.getElementById("div00");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", null);
+    cambiarCasilla("00", null);
+    cambiarCasilla("01", null);
+    cambiarCasilla("02", null);
+    cambiarCasilla("10", null);
+    cambiarCasilla("11", null);
+    cambiarCasilla("12", null);
+    cambiarCasilla("20", null);
+    cambiarCasilla("21", null);
+    cambiarCasilla("22", null);
 }
 
 function desbloquearTablero(){
-    var obj;
-    
-    obj = document.getElementById("div00");
+    cambiarCasilla("00", "hacerMovimiento('00')");
+    cambiarCasilla("01", "hacerMovimiento('01')");
+    cambiarCasilla("02", "hacerMovimiento('02')");
+    cambiarCasilla("10", "hacerMovimiento('10')");
+    cambiarCasilla("11", "hacerMovimiento('11')");
+    cambiarCasilla("12", "hacerMovimiento('12')");
+    cambiarCasilla("20", "hacerMovimiento('20')");
+    cambiarCasilla("21", "hacerMovimiento('21')");
+    cambiarCasilla("22", "hacerMovimiento('22')");
+}
+
+function cambiarCasilla(XX, onclickValue){
+    var obj = document.getElementById("div" + XX);
     if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", hacerMovimiento('00'));
-    
-    obj = document.getElementById("div01");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", hacerMovimiento('01'));
-    
-    obj = document.getElementById("div02");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", hacerMovimiento('02'));
-    
-    obj = document.getElementById("div10");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", hacerMovimiento('10'));
-    
-    obj = document.getElementById("div11");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", hacerMovimiento('11'));
-    
-    obj = document.getElementById("div12");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", hacerMovimiento('12'));
-    
-    obj = document.getElementById("div20");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", hacerMovimiento('20'));
-    
-    obj = document.getElementById("div21");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", hacerMovimiento('21'));
-    
-    obj = document.getElementById("div22");
-    if(obj.hasAttribute("onclick"))
-        obj.setAttribute("onclick", hacerMovimiento('22'));
+        obj.setAttribute("onclick", onclickValue);
 }
