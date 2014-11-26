@@ -11,10 +11,12 @@ function hacerMovimiento(posicion){
     document.getElementById("resultado").innerHTML = "Calculando resultado...";
     
     var XHRObject = new XMLHttpRequest();
+    alert(posicion);
     XHRObject.open("GET", "movimiento.php?pos="+posicion, "true");
 	XHRObject.send();
 	XHRObject.onreadystatechange = function(){
             if (XHRObject.readyState == 4){
+            	alert(XHRObject.responseText);
                 document.getElementById("pos" + XHRObject.responseText).innerHTML = "X";
                 document.getElementById("div" + XHRObject.responseText).removeAttribute("onclick");
                 desbloquearTablero();
