@@ -24,7 +24,6 @@ function hacerMovimiento(posicion){
 }
 
 function bloquearTablero(){
-    alert('aa');
     var obj;
     obj = document.getElementById("div00");
     if(obj.hasAttribute("onclick"))
