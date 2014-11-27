@@ -16,6 +16,9 @@ function hacerMovimiento(posicion){
 	XHRObject.onreadystatechange = function(){
             if (XHRObject.readyState == 4){
                 var resultado = XHRObject.responseText;
+                //if(resultado.substr(0, 2) == "ID"){
+                //    alert(resultado);
+                //}else{
                 if(resultado.length == 2){ //Se sigue la partida
                     document.getElementById("pos" + resultado).innerHTML = "X";
                     document.getElementById("div" + resultado).removeAttribute("onclick");
@@ -28,10 +31,13 @@ function hacerMovimiento(posicion){
                     if(resultado.substr(1, 6) == "empate") alert("¡Se ha empatado la partida!");
                     else if(resultado.substr(5,1) == "O") alert("¡ENHORABUENA! Has ganado la partida.");
                     else if(resultado.substr(5,1) == "X") alert("¡Has perdido la partida!");
-                    document.getElementById("resultado").innerHTML = "Partida finalizada.";
+                    document.getElementById("resultado").innerHTML = "Partida finalizada. \n\
+                        <input type='button' value='Volver a jugar' onclick='reiniciarPartida()'/>";
+                    
                 }  
+                //}
             }
-	}
+	};
 }
 
 function bloquearTablero(){
@@ -62,4 +68,29 @@ function cambiarCasilla(XX, onclickValue){
     var obj = document.getElementById("div" + XX);
     if(obj.hasAttribute("onclick"))
         obj.setAttribute("onclick", onclickValue);
+}
+
+function reiniciarPartida(){
+    // Agregar o cambiar valor de atributos
+    document.getElementById("div00").setAttribute("onclick", "hacerMovimiento('00')");
+    document.getElementById("div01").setAttribute("onclick", "hacerMovimiento('01')");
+    document.getElementById("div02").setAttribute("onclick", "hacerMovimiento('02')");
+    document.getElementById("div10").setAttribute("onclick", "hacerMovimiento('10')");
+    document.getElementById("div11").setAttribute("onclick", "hacerMovimiento('11')");
+    document.getElementById("div12").setAttribute("onclick", "hacerMovimiento('12')");
+    document.getElementById("div20").setAttribute("onclick", "hacerMovimiento('20')");
+    document.getElementById("div21").setAttribute("onclick", "hacerMovimiento('21')");
+    document.getElementById("div22").setAttribute("onclick", "hacerMovimiento('22')");
+    
+    document.getElementById("pos00").innerHTML = "";
+    document.getElementById("pos01").innerHTML = "";
+    document.getElementById("pos02").innerHTML = "";
+    document.getElementById("pos10").innerHTML = "";
+    document.getElementById("pos11").innerHTML = "";
+    document.getElementById("pos12").innerHTML = "";
+    document.getElementById("pos20").innerHTML = "";
+    document.getElementById("pos21").innerHTML = "";
+    document.getElementById("pos22").innerHTML = "";
+    
+    document.getElementById("resultado").innerHTML = "";
 }
