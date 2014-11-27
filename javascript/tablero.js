@@ -11,16 +11,25 @@ function hacerMovimiento(posicion){
     document.getElementById("resultado").innerHTML = "Calculando resultado...";
     
     var XHRObject = new XMLHttpRequest();
-    alert(posicion);
     XHRObject.open("GET", "movimiento.php?pos="+posicion, "true");
 	XHRObject.send();
 	XHRObject.onreadystatechange = function(){
             if (XHRObject.readyState == 4){
-            	alert(XHRObject.responseText);
-                document.getElementById("pos" + XHRObject.responseText).innerHTML = "X";
-                document.getElementById("div" + XHRObject.responseText).removeAttribute("onclick");
-                desbloquearTablero();
-                document.getElementById("resultado").innerHTML = "";
+                var resultado = XHRObject.responseText;
+                if(resultado.length == 2){ //Se sigue la partida
+                    document.getElementById("pos" + resultado).innerHTML = "X";
+                    document.getElementById("div" + resultado).removeAttribute("onclick");
+                    desbloquearTablero();
+                    document.getElementById("resultado").innerHTML = "";
+                }else{ //Se termina la partida
+                    if(resultado.substr(0, 1) == "M"){ //Mostrar ultimo movimiento de la maquina
+                         document.getElementById("pos" + resultado.substr(-2, 2)).innerHTML = "X";
+                    }
+                    if(resultado.substr(1, 6) == "empate") alert("¡Se ha empatado la partida!");
+                    else if(resultado.substr(5,1) == "O") alert("¡ENHORABUENA! Has ganado la partida.");
+                    else if(resultado.substr(5,1) == "X") alert("¡Has perdido la partida!");
+                    document.getElementById("resultado").innerHTML = "Partida finalizada.";
+                }  
             }
 	}
 }

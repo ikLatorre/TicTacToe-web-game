@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tablero>
+    <casilla id="00"><ficha>X</ficha></casilla>
+    <casilla id="01"/>
+    <casilla id="02"><ficha>O</ficha></casilla>
+    <casilla id="10"><ficha>O</ficha></casilla>
+    <casilla id="11"><ficha>X</ficha></casilla>
+    <casilla id="12"><ficha>O</ficha></casilla>
+    <casilla id="20"><ficha>X</ficha></casilla>
+    <casilla id="21"/>
+    <casilla id="22"><ficha>O</ficha></casilla>
+</tablero>
