@@ -1,58 +1,15 @@
 <?php
-session_start();
 
 function getPartidasXML() {
     $fich_partida = "partidas.xml";
-    if (! file_exists ( $fich_partida )) {
-        $partidasXML = new SimpleXMLElement ('<?xml version="1.0" encoding="UTF-8"?>
-            <partidas ult_id="partida0">
-            </partidas>');
-    } else {
-        $partidasXML = simplexml_load_file ( $fich_partida );
-    }
-    if (!isset($_SESSION['id'])){
-        $id = nuevaPartidaXML($partidasXML);
-        $partidasXML = simplexml_load_file ($fich_partida);
-        $_SESSION['id'] = $id;
-        //echo "IDentificador de partida: " . $id;
-    }
-    return $partidasXML;
+    return simplexml_load_file ($fich_partida);
 }
-
-function nuevaPartidaXML($partidasXML){
-    $id = (int)substr($partidasXML['ult_id'], 7) + 1;
-    $nuevaPartida = $partidasXML->addChild('partida');
-    $nuevaPartida['id'] = "partida" . $id;
-    $nuevaCasilla1 = $nuevaPartida->addChild('casilla');
-    $nuevaCasilla1['id'] = "00";
-    $nuevaCasilla2 = $nuevaPartida->addChild('casilla');
-    $nuevaCasilla2['id'] = "01";
-    $nuevaCasilla3 = $nuevaPartida->addChild('casilla');
-    $nuevaCasilla3['id'] = "02";
-    $nuevaCasilla4 = $nuevaPartida->addChild('casilla');
-    $nuevaCasilla4['id'] = "10";
-    $nuevaCasilla5 = $nuevaPartida->addChild('casilla');
-    $nuevaCasilla5['id'] = "11";
-    $nuevaCasilla6 = $nuevaPartida->addChild('casilla');
-    $nuevaCasilla6['id'] = "12";
-    $nuevaCasilla7 = $nuevaPartida->addChild('casilla');
-    $nuevaCasilla7['id'] = "20";
-    $nuevaCasilla8 = $nuevaPartida->addChild('casilla');
-    $nuevaCasilla8['id'] = "21";
-    $nuevaCasilla9 = $nuevaPartida->addChild('casilla');
-    $nuevaCasilla9['id'] = "22";
-    
-    $partidasXML['ult_id'] = "partida" . $id;
-    $partidasXML->asXML('partidas.xml');
-    return $id;
-}
-
 
 function getTablero() {
     $partidasXML = getPartidasXML ();
     //Obtener tablero de la partida del usuario (segun id de la sesion)
     foreach($partidasXML->partida as $tablero){
-        if($tablero['id'] == "partida" . $_SESSION['id']){
+        if($tablero['id'] == "partida" . $_REQUEST['id']){
             $partida = array (
                         array (
                                 $tablero->casilla [0]->ficha [0],
@@ -98,9 +55,9 @@ function getMovimiento() {
 
 function setJugada($jugada, $jugador) {
     $partidasXML = getPartidasXML ();
-    foreach($partidasXML->partida as $tablero){
-        if($tablero['id'] == "partida".$_SESSION['id']){
-            foreach ( $tablero->casilla as $casilla ) {
+    foreach($partidasXML->partida as $partida){
+        if($partida['id'] == "partida".$_REQUEST['id']){
+            foreach ( $partida->casilla as $casilla ) {
                 foreach ($casilla->attributes() as $a => $b){
                     if ($b == $jugada)
                         $casilla->addChild ( "ficha", $jugador );
@@ -111,6 +68,18 @@ function setJugada($jugada, $jugador) {
     $partidasXML->saveXML("partidas.xml");
     return true;
 }
+
+function setPartidaTerminada(){
+    $partidasXML = getPartidasXML ();
+    foreach($partidasXML->partida as $partida){
+        if($partida['id'] == "partida".$_REQUEST['id']){
+            $partida['terminada'] = "si";
+        }
+    }
+    $partidasXML->saveXML("partidas.xml");
+    return true;
+}
+
 
 //Obtiene el estado de la partida: 'ganaO', 'ganaX', 'empate' o 'continuar'
 function getEstado(){
@@ -159,14 +128,15 @@ if($estado == "continuar"){
     if($estado == "continuar")
         echo $jugada;
     else{
+        setPartidaTerminada();
         // Termina la partida por el movimiento de la maquina.
         // Mostrar su ultimo movimiento en la partida.
-        session_destroy ();
-        echo "M".$estado.$jugada;
+        // 'R' representa 'rival', la maquina en este caso
+        echo "R".$estado.$jugada;
     }
 }else{
+    setPartidaTerminada();
     // Termina la partida por el movimiento del jugador.
-    session_destroy ();
     echo "J".$estado;
 }
 ?>

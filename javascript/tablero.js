@@ -4,40 +4,99 @@
  * and open the template in the editor.
  */
 
+//Se hace onLoad (preparar tablero y turno. Siempre empieza la ficha O, siempre del jugador que creala partida)
+//En el caso de ser el jugador que se une a una partida, bloquear tablero hasta que el rival haga el primer
+//movimiento, o actualizarlo con el primer movimiento que ha hecho el rival.
+function prepararTablero(){
+    //Realizar solo si se ha unido (y no creado) a una partida jugador vs jugador
+    if(document.getElementById("tipo").value == "J" && document.getElementById("ficha").value == "X"){
+        var XHRObject;
+	if(XMLHttpRequest)
+            XHRObject = new XMLHttpRequest();
+	else
+            XHRObject = new ActiveXObject("Microsoft.XMLHTTP");
+        XHRObject.open('GET', 'estadoInicial.php?id='+document.getElementById("idPartida").value, true);
+        XHRObject.onreadystatechange = function(){
+                if(XHRObject.readyState == 4 && XHRObject.status == 200){
+                    var partidaString = XHRObject.responseText;
+                    var parser=new DOMParser();
+                    var partidaXML=parser.parseFromString(partidaString,'text/xml');
+                    
+                    //Establecer el estado del tablero y turno correctos
+                    if(partidaXML.getElementsByTagName("partida")[0].getAttribute("siguiente") == "O"){
+                        alert('tablero bloqueado esperando');
+                        
+                        //bloquear todo el tablero, a la espera del primer movimiento de la partida, del rival
+                        bloquearTablero();
+                        document.getElementById("resultado").innerHTML = "Esperando movimiento del rival...";
+                    }else{
+                        alert('tablero desbloqueado');
+                        
+                        //actualizar estado del tablero y dejar desbloqueadas las casillas correspondientes
+                        var partida = xml.getElementsByTagName("partida")[0];  
+                        for(i=0; i<partida.childNodes.length; i++){
+                            if(partida.childNodes[i].childNodes[0].value == "O"){
+                                var pos = partida.childNodes[i].getAttribute('id');
+                                document.getElementById("pos" + pos).innerHTML = "O";
+                                document.getElementById("div" + pos).removeAttribute("onclick");
+                            }
+                        }
+                        document.getElementById("resultado").innerHTML = "Realice el siguiente movimiento";
+                    }
+                }    
+	};
+	XHRObject.send('');
+    }else{
+        //Es contra la maquina o contra un jugador pero se ha creado la partida
+        document.getElementById("resultado").innerHTML = "Realice el siguiente movimiento";
+    }
+}
+
 function hacerMovimiento(posicion){
-    document.getElementById("pos" + posicion).innerHTML = "O";
+    var url, mensajeEspera;
+    if(document.getElementById("tipo").value == "J"){
+        url = "movimientoJugador.php?pos=" + posicion
+            + "&id=" + document.getElementById("idPartida").value
+            + "&ficha=" + document.getElementById("ficha").value;
+        mensajeEspera = "Esperando movimiento del rival...";
+    }else{
+        url = "movimientoMaquina.php?pos=" + posicion 
+            + "&dificultad=" + document.getElementById("tipo").value
+            + "&id=" + document.getElementById("idPartida").value; 
+        mensajeEspera = "Calculando movimiento...";
+    }
+    document.getElementById("pos" + posicion).innerHTML = document.getElementById("ficha").value;
     document.getElementById("div" + posicion).removeAttribute("onclick");
     bloquearTablero();
-    document.getElementById("resultado").innerHTML = "Calculando resultado...";
+    document.getElementById("resultado").innerHTML = mensajeEspera;
+    
+    var fichaRival;
+    if(document.getElementById("ficha").value == "O") fichaRival = "X";
+    else fichaRival = "O";
     
     var XHRObject = new XMLHttpRequest();
-    XHRObject.open("GET", "movimiento.php?pos="+posicion, "true");
-	XHRObject.send();
-	XHRObject.onreadystatechange = function(){
-            if (XHRObject.readyState == 4){
-                var resultado = XHRObject.responseText;
-                //if(resultado.substr(0, 2) == "ID"){
-                //    alert(resultado);
-                //}else{
-                if(resultado.length == 2){ //Se sigue la partida
-                    document.getElementById("pos" + resultado).innerHTML = "X";
-                    document.getElementById("div" + resultado).removeAttribute("onclick");
-                    desbloquearTablero();
-                    document.getElementById("resultado").innerHTML = "";
-                }else{ //Se termina la partida
-                    if(resultado.substr(0, 1) == "M"){ //Mostrar ultimo movimiento de la maquina
-                         document.getElementById("pos" + resultado.substr(-2, 2)).innerHTML = "X";
-                    }
-                    if(resultado.substr(1, 6) == "empate") alert("¡Se ha empatado la partida!");
-                    else if(resultado.substr(5,1) == "O") alert("¡ENHORABUENA! Has ganado la partida.");
-                    else if(resultado.substr(5,1) == "X") alert("¡Has perdido la partida!");
-                    document.getElementById("resultado").innerHTML = "Partida finalizada. \n\
-                        <input type='button' value='Volver a jugar' onclick='reiniciarPartida()'/>";
-                    
-                }  
-                //}
-            }
-	};
+    XHRObject.open("GET", url, "true");
+    XHRObject.onreadystatechange = function(){
+        if (XHRObject.readyState == 4){
+            var resultado = XHRObject.responseText;
+            if(resultado.length == 2){ //Se sigue la partida
+                document.getElementById("pos" + resultado).innerHTML = fichaRival;
+                document.getElementById("div" + resultado).removeAttribute("onclick");
+                desbloquearTablero();
+                document.getElementById("resultado").innerHTML = "Realice el siguiente movimiento";
+            }else{ //Se termina la partida
+                if(resultado.substr(0, 1) == "R"){ //Mostrar ultimo movimiento del rival
+                     document.getElementById("pos" + resultado.substr(-2, 2)).innerHTML = fichaRival;
+                }
+                if(resultado.substr(1, 6) == "empate") alert("Se ha empatado la partida.");
+                else if(resultado.substr(5,1) != fichaRival) alert("ENHORABUENA! Has ganado la partida.");
+                else if(resultado.substr(5,1) == fichaRival) alert("Has perdido la partida.");
+                document.getElementById("resultado").innerHTML = "Partida finalizada \n\
+                    <input type='button' value='Volver a jugar' onclick='reiniciarPartida()'/>";
+            }  
+        }
+    };
+    XHRObject.send();
 }
 
 function bloquearTablero(){
@@ -64,33 +123,12 @@ function desbloquearTablero(){
     cambiarCasilla("22", "hacerMovimiento('22')");
 }
 
-function cambiarCasilla(XX, onclickValue){
-    var obj = document.getElementById("div" + XX);
+function cambiarCasilla(pos, onclickValue){
+    var obj = document.getElementById("div" + pos);
     if(obj.hasAttribute("onclick"))
         obj.setAttribute("onclick", onclickValue);
 }
 
 function reiniciarPartida(){
-    // Agregar o cambiar valor de atributos
-    document.getElementById("div00").setAttribute("onclick", "hacerMovimiento('00')");
-    document.getElementById("div01").setAttribute("onclick", "hacerMovimiento('01')");
-    document.getElementById("div02").setAttribute("onclick", "hacerMovimiento('02')");
-    document.getElementById("div10").setAttribute("onclick", "hacerMovimiento('10')");
-    document.getElementById("div11").setAttribute("onclick", "hacerMovimiento('11')");
-    document.getElementById("div12").setAttribute("onclick", "hacerMovimiento('12')");
-    document.getElementById("div20").setAttribute("onclick", "hacerMovimiento('20')");
-    document.getElementById("div21").setAttribute("onclick", "hacerMovimiento('21')");
-    document.getElementById("div22").setAttribute("onclick", "hacerMovimiento('22')");
-    
-    document.getElementById("pos00").innerHTML = "";
-    document.getElementById("pos01").innerHTML = "";
-    document.getElementById("pos02").innerHTML = "";
-    document.getElementById("pos10").innerHTML = "";
-    document.getElementById("pos11").innerHTML = "";
-    document.getElementById("pos12").innerHTML = "";
-    document.getElementById("pos20").innerHTML = "";
-    document.getElementById("pos21").innerHTML = "";
-    document.getElementById("pos22").innerHTML = "";
-    
-    document.getElementById("resultado").innerHTML = "";
+    location.href = "index.xhtml";
 }
