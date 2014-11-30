@@ -10,6 +10,7 @@ $tipo_ficha_id = calcularIdPartida();
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="css/estilo.css" type="text/css" />
         <link href='http://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'/>
+        <link href='http://fonts.googleapis.com/css?family=Fredoka+One' rel='stylesheet' type='text/css'/>
         <script type="text/javascript" src="javascript/tablero.js" ></script>
     </head>
 
@@ -17,12 +18,10 @@ $tipo_ficha_id = calcularIdPartida();
         <header id="header">        
             <h1>3 en raya</h1>
         </header>
-        <div id="resultado" style="text-align: center;"></div> <br />
-        <div id="resultado2" style="text-align: center;"></div> <br />
         <table class="tablero">
             <tr>
                 <td id="div00" onclick="hacerMovimiento('00')">
-                    <span id="pos00"></span>
+                    <span id="pos00" ></span>
                 </td>
                 <td id="div01" onclick="hacerMovimiento('01')">
                     <span id="pos01" ></span>
@@ -54,6 +53,10 @@ $tipo_ficha_id = calcularIdPartida();
                 </td>
             </tr>
         </table>
+
+        <div id="resultado" style="text-align: center;"></div> <br />
+        <div id="resultado2" style="text-align: center;"></div> <br />
+
 
         <div><form>
                 <input type="hidden" id="ficha" name="ficha" value="<?php echo(substr($tipo_ficha_id, 1, 1)); ?>" /> <!-- [O|X] -->

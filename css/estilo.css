@@ -13,15 +13,16 @@ body {
 }
 
 #header {
-    margin-bottom: 2px;
+    margin-bottom: 20px;
     background-color: #eaeaea;
     border-bottom: 1px solid black;
     padding: 1px;
 }
 
 #header h1 {
+    margin: auto;
+    font-size: 60px;
     font-family: 'Shadows Into Light', cursive;
-    font-weight: bolder;
     text-align: center;
 }
 
@@ -31,18 +32,19 @@ body {
 }
 
 .tablero {
-    border: 1px solid black;
     margin: auto;
+    margin-top: 50px;
+    margin-bottom: 20px;
 }
 
 .tablero th, .tablero td {
-    border: 1px solid black;
+    background-color: #bbe4f8;
+    border-radius: 30px;
     width: 80px;
     height: 80px;
     text-align: center;
 }
 
 .tablero span {
-    font: 60px arial, sans-serif;
+    font: 60px 'Fredoka One', cursive;
 } 
-

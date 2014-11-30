@@ -13,13 +13,13 @@ and open the template in the editor.
         <link href='http://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'/>
         <script>
             function deshabilitarDificultades() {
-                var estado;
-                if (document.getElementById("vsJugador").value == "jugador")
-                    estado = true;
+                var deshabilitado;
+                if (document.getElementById("vsJugador").checked == true)
+                    deshabilitado = true;
                 else
-                    estado = false;
-                document.getElementById("dificultadFacil").setAttribute("enabled", "false");
-                document.getElementById("dificultadDificil").setAttribute("enabled", "false");
+                    deshabilitado = false;
+                document.getElementById("dificultadFacil").disabled = deshabilitado;
+                document.getElementById("dificultadDificil").disabled = deshabilitado;
             }
         </script>
     </head>
@@ -29,9 +29,9 @@ and open the template in the editor.
         </div>        
         <form action="partida.php" method="post" enctype="multipart/form-data" >
             <div>
-                <input type="radio" id="vsMaquina" name="vs" value="maquina" checked="checked" />vs Maquina
+                <input type="radio" id="vsMaquina" name="vs" value="maquina" checked="checked" onclick="deshabilitarDificultades()" />vs Maquina
                 <br />
-                <input type="radio" id="vsJugador" name="vs" value="jugador" onchange="deshabilitarDificultades()"/>vs Jugador
+                <input type="radio" id="vsJugador" name="vs" value="jugador" onclick="deshabilitarDificultades()"/>vs Jugador
             </div>
 
             <div>
