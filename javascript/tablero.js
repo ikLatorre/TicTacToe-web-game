@@ -24,13 +24,12 @@ function prepararTablero() {
 
                 //Establecer el estado del tablero y turno correctos
                 if (partidaXML.getElementsByTagName("partida")[0].getAttribute("siguiente") == "O") {
-                    alert('tablero bloqueado esperando');
-
                     //bloquear todo el tablero, a la espera del primer movimiento de la partida, del rival
                     bloquearTablero();
                     document.getElementById("resultado").innerHTML = "Esperando movimiento del rival...";
+                    // Hacer consultas periodicas para saber cuando habilitar el tablero
+                    esperarTurno();
                 } else {
-                    alert('tablero desbloqueado');
                     //actualizar estado del tablero y dejar desbloqueadas las casillas correspondientes
                     var casillas = partidaXML.getElementsByTagName("casilla");
                     for (i = 0; i < casillas.length; i++) {
@@ -52,6 +51,47 @@ function prepararTablero() {
         //Es contra la maquina o contra un jugador pero se ha creado la partida
         document.getElementById("resultado").innerHTML = "Realice el siguiente movimiento";
     }
+}
+
+//Variable para guardar el interval, y poder detenerlo.
+var interval;
+function esperarTurno(){
+    interval = setInterval(consultarEstado, 3000);
+}
+
+function consultarEstado(){
+    var XHRObject;
+    if (XMLHttpRequest)
+        XHRObject = new XMLHttpRequest();
+    else
+        XHRObject = new ActiveXObject("Microsoft.XMLHTTP");
+    XHRObject.open('GET', 'estadoInicial.php?id=' + document.getElementById("idPartida").value, true);
+    XHRObject.onreadystatechange = function () {
+        if (XHRObject.readyState == 4 && XHRObject.status == 200) {
+            var partidaString = XHRObject.responseText;
+            var parser = new DOMParser();
+            var partidaXML = parser.parseFromString(partidaString, 'text/xml');
+
+           if (partidaXML.getElementsByTagName("partida")[0].getAttribute("siguiente") == "X") { 
+               //actualizar estado del tablero y dejar desbloqueadas las casillas correspondientes
+                var casillas = partidaXML.getElementsByTagName("casilla");
+                for (i = 0; i < casillas.length; i++) {
+                    if (casillas[i].childNodes.length > 0) {
+                        var ficha = casillas[i].childNodes[0];
+                        if (ficha.childNodes[0].nodeValue == "O") {
+                            var pos = casillas[i].getAttribute('id');
+                            document.getElementById("pos" + pos).innerHTML = "O";
+                            document.getElementById("div" + pos).removeAttribute("onclick");
+                        }
+                    }
+                }
+                clearInterval(interval);
+                desbloquearTablero();
+                document.getElementById("resultado").innerHTML = "Realice el siguiente movimiento";
+           }  
+        }
+    };
+    XHRObject.send('');
 }
 
 function hacerMovimiento(posicion) {
