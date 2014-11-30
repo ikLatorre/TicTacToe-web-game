@@ -7,24 +7,39 @@ and open the template in the editor.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>TODO supply a title</title>
+        <title>Tres en raya</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="css/estilo.css" type="text/css" />
+        <link href='http://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'/>
+        <script>
+            function deshabilitarDificultades() {
+                var estado;
+                if (document.getElementById("vsJugador").value == "jugador")
+                    estado = true;
+                else
+                    estado = false;
+                document.getElementById("dificultadFacil").setAttribute("enabled", "false");
+                document.getElementById("dificultadDificil").setAttribute("enabled", "false");
+            }
+        </script>
     </head>
     <body>
-        <div>TODO write content</div>
+        <div id="header">        
+            <h1>3 en raya</h1>
+        </div>        
         <form action="partida.php" method="post" enctype="multipart/form-data" >
             <div>
-                <input type="radio" name="vs" value="maquina" checked="checked" />vs Maquina
+                <input type="radio" id="vsMaquina" name="vs" value="maquina" checked="checked" />vs Maquina
                 <br />
-                <input type="radio" name="vs" value="jugador" />vs Jugador
+                <input type="radio" id="vsJugador" name="vs" value="jugador" onchange="deshabilitarDificultades()"/>vs Jugador
             </div>
-            
+
             <div>
-                <input type="radio" name="dificultad" value="facil" checked="checked" />Facil
+                <input type="radio" id="dificultadFacil" name="dificultad" value="facil" checked="checked" />Facil
                 <br />
-                <input type="radio" name="dificultad" value="dificil" />Dificil
+                <input type="radio" id="dificultadDificil" name="dificultad" value="dificil" />Dificil
             </div>
-            
+
             <div>
                 <input type="submit" value="Jugar" />
             </div>
