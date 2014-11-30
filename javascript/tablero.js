@@ -7,7 +7,7 @@
 //Se hace onLoad (preparar tablero y turno. Siempre empieza la ficha O, siempre del jugador que creala partida)
 //En el caso de ser el jugador que se une a una partida, bloquear tablero hasta que el rival haga el primer
 //movimiento, o actualizarlo con el primer movimiento que ha hecho el rival.
-function prepararTablero() {
+function prepararTablero() { 
     //Realizar solo si se ha unido (y no creado) a una partida jugador vs jugador
     if (document.getElementById("tipo").value == "J" && document.getElementById("ficha").value == "X") {
         var XHRObject;
@@ -118,7 +118,11 @@ function hacerMovimiento(posicion) {
     else
         fichaRival = "O";
 
-    var XHRObject = new XMLHttpRequest();
+    var XHRObject;
+        if (XMLHttpRequest)
+            XHRObject = new XMLHttpRequest();
+        else
+            XHRObject = new ActiveXObject("Microsoft.XMLHTTP");
     XHRObject.open("GET", url, "true");
     XHRObject.onreadystatechange = function () {
         if (XHRObject.readyState == 4) {
