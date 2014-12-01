@@ -22,7 +22,7 @@ foreach($partidasXML->partida as $partida){
         }
         $casillasString = $casillasString . "</partida>";
         echo $casillasString;
-        //return new SimpleXMLElement($casillasString);
+        exit();
     }
 }
 ?>

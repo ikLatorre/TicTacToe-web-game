@@ -70,67 +70,18 @@ function getEstado(){
     else return "continuar";
 }
 
-function setJugada($jugada, $ficha) {
-    if($ficha == "O") $fichaRival = "X";
-    else $fichaRival = "O";
-    
+function consultarTurno() {
     $partidasXML = getPartidasXML ();
     foreach($partidasXML->partida as $partida)
-        if($partida['id'] == "partida".$_REQUEST['id']){
-            $partida['siguiente'] = $fichaRival; 
-            $partida['ultimoMov'] = $jugada;
-            foreach ( $partida->casilla as $casilla ) 
-                foreach ($casilla->attributes() as $a => $b)
-                    if ($b == $jugada)
-                        $casilla->addChild ( "ficha", $ficha );
-            break;
-        }
-    $partidasXML->saveXML("partidas.xml");
-    return true;
+        if($partida['id'] == "partida".$_REQUEST['id'])
+            if($partida['siguiente'] == $_REQUEST['ficha'])
+                return $partida['ultimoMov'];
+            else
+                return "esperar";   
 }
 
-function setPartidaTerminada(){
-    $partidasXML = getPartidasXML ();
-    foreach($partidasXML->partida as $partida)
-        if($partida['id'] == "partida".$_REQUEST['id']){
-            $partida['terminada'] = "si";
-            break;
-        }
-    $partidasXML->saveXML("partidas.xml");
-    return true;
-}
-
-$jugada = $_REQUEST ['pos'];
-$ficha = $_REQUEST['ficha'];
-setJugada($jugada, $ficha);
-$estado = getEstado();
-if($estado != "continuar")
-    setPartidaTerminada();
-echo $estado;
-
-/*$jugada = $_REQUEST ['pos'];
-$ficha = $_REQUEST['ficha'];
-if($ficha == "O") $fichaRival = "X";
-else $fichaRival = "O";
-
-setJugada($jugada, $ficha);
-$estado = getEstado();
-
-if($estado == "continuar"){
-    $jugada = esperarMovimientoRival($ficha);
-    //setJugada($jugada, $fichaRival); --> El rival ya lo habra hecho
-    $estado = getEstado();
-    if($estado == "continuar")
-        echo $jugada;
-    else{
-        //setPartidaTerminada(); --> No hace falta, lo habra realizado el rival
-        // Termina la partida por el movimiento del rival.
-        // Mostrar su ultimo movimiento en la partida.
-        // 'R' representa 'rival'
-        echo "R".$estado.$jugada;
-    }
-}else{
-    setPartidaTerminada();
-    // Termina la partida por el movimiento del jugador.
-    echo "J".$estado;
-}*/
+$turno = consultarTurno();
+if($turno == "esperar")
+    echo "esperar";
+else
+    echo getEstado() . $turno; //Devuelve el estado y el ultimo movimiento realizado

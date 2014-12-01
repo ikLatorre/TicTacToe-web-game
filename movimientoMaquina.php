@@ -30,7 +30,6 @@ function getTablero() {
             return $partida;
         }
     }
-    return null;
 }
 
 function getPosicionBloqueante($raya, $partida){
@@ -109,69 +108,67 @@ function getMovimiento($dificultad) {
     }
 }    
 
+//True si no quedan casillas vacias en el tablero. False e.c.c.
+function estaCompleto($partida){
+    for ($i = 0; $i <= 2; $i++) 
+        for ($j = 0; $j <= 2; $j++) 
+            if($partida[$i][$j] == "")
+                return false;
+    return true;
+}
+
+//Dada una raya del tablero, obtener el ganador si lo hubiera [O|X]
+function getGanador($raya, $partida){
+    $estadoRaya = $partida[$raya[0]][$raya[1]] . $partida[$raya[2]][$raya[3]] . $partida[$raya[4]][$raya[5]];
+    if($estadoRaya == "XXX" || $estadoRaya == "OOO") return substr($estadoRaya, 0, 1);
+    else return "";
+}
+
+//Obtiene el estado de la partida: 'ganaO', 'ganaX', 'empate' o 'continuar'
+function getEstado(){
+    $partida = getTablero();
+    $rayas = array ( 
+                array (0, 0, 0, 1, 0, 2),
+                array (1, 0, 1, 1, 1, 2),
+                array (2, 0, 2, 1, 2, 2),
+                array (0, 0, 1, 0, 2, 0),
+                array (0, 1, 1, 1, 2, 1),
+                array (0, 2, 1, 2, 2, 2),
+                array (0, 0, 1, 1, 2, 2),
+                array (0, 2, 1, 1, 2, 0)
+            );
+    for ($i = 0; $i <= 7; $i++) {
+        $ganador = getGanador($rayas[$i], $partida);
+        if($ganador != "") return "gana" . $ganador;
+    }
+    
+    if(estaCompleto($partida)) return "empate";
+    else return "continuar";
+}
+
 function setJugada($jugada, $jugador) {
     $partidasXML = getPartidasXML ();
-    foreach($partidasXML->partida as $partida){
+    foreach($partidasXML->partida as $partida)
         if($partida['id'] == "partida".$_REQUEST['id']){
-            foreach ( $partida->casilla as $casilla ) {
-                foreach ($casilla->attributes() as $a => $b){
+            foreach ( $partida->casilla as $casilla ) 
+                foreach ($casilla->attributes() as $a => $b)
                     if ($b == $jugada)
                         $casilla->addChild ( "ficha", $jugador );
-                }
-            }
+            break;
         }
-    }
     $partidasXML->saveXML("partidas.xml");
     return true;
 }
 
 function setPartidaTerminada(){
     $partidasXML = getPartidasXML ();
-    foreach($partidasXML->partida as $partida){
+    foreach($partidasXML->partida as $partida)
         if($partida['id'] == "partida".$_REQUEST['id']){
             $partida['terminada'] = "si";
+            break;
         }
-    }
     $partidasXML->saveXML("partidas.xml");
     return true;
-}
-
-
-//Obtiene el estado de la partida: 'ganaO', 'ganaX', 'empate' o 'continuar'
-function getEstado(){
-    $partida = getTablero();
-    
-    /*if(is_null($partida)){
-        echo ("Error al obtener el estado del tablero.");
-        exit();
-    }*/
-    
-    $op1 = $partida[0][0].$partida[0][1].$partida[0][2];
-    if($op1 == "XXX" || $op1 == "OOO") return "gana".substr($op1, 0, 1);
-    
-    $op2 = $partida[1][0].$partida[1][1].$partida[1][2];
-    if($op2 == "XXX" || $op2 == "OOO") return "gana".substr($op2, 0, 1);
-    
-    $op3 = $partida[2][0].$partida[2][1].$partida[2][2];
-    if($op3 == "XXX" || $op3 == "OOO") return "gana".substr($op3, 0, 1);
-    
-    $op4 = $partida[0][0].$partida[1][0].$partida[2][0];
-    if($op4 == "XXX" || $op4 == "OOO") return "gana".substr($op4, 0, 1);
-    
-    $op5 = $partida[0][1].$partida[1][1].$partida[2][1];
-    if($op5 == "XXX" || $op5 == "OOO") return "gana".substr($op5, 0, 1);
-    
-    $op6 = $partida[0][2].$partida[1][2].$partida[2][2];
-    if($op6 == "XXX" || $op6 == "OOO") return "gana".substr($op6, 0, 1);
-    
-    $op7 = $partida[0][0].$partida[1][1].$partida[2][2];
-    if($op7 == "XXX" || $op7 == "OOO") return "gana".substr($op7, 0, 1);
-    
-    $op8 = $partida[0][2].$partida[1][1].$partida[2][0];
-    if($op8 == "XXX" || $op8 == "OOO") return "gana".substr($op8, 0, 1);
-    
-    if(strlen($op1.$op2.$op3) == 9) return "empate";
-    else return "continuar";
 }
 
 $jugada = $_REQUEST ['pos'];
