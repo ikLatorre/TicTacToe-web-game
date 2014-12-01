@@ -33,7 +33,7 @@ function prepararTablero() {
                 if (partidaXML.getElementsByTagName("partida")[0].getAttribute("siguiente") == "O") {
                     //bloquear todo el tablero, a la espera del primer movimiento de la partida, del rival
                     bloquearTablero();
-                    document.getElementById("resultado").innerHTML = "Esperando movimiento del rival...";
+                    document.getElementById("resultado").innerHTML = "<span>Esperando movimiento del rival...</span><img id=\"loading\" src=\"images/loading.gif\" alt=\"gif_cargando\"/>";
                     // Hacer consultas periodicas para saber cuando habilitar el tablero
                     esperarTurno();
                 } else {
@@ -48,14 +48,14 @@ function prepararTablero() {
                             }
                         }
                     }
-                    document.getElementById("resultado").innerHTML = "Realice el siguiente movimiento";
+                    document.getElementById("resultado").innerHTML = "<span>Realice el siguiente movimiento</span>";
                 }
             }
         };
         XHRObject.send('');
     } else {
         //Es contra la maquina o contra un jugador pero se ha creado la partida
-        document.getElementById("resultado").innerHTML = "Realice el siguiente movimiento";
+        document.getElementById("resultado").innerHTML = "<span>Realice el siguiente movimiento</span>";
     }
 }
 
@@ -92,7 +92,7 @@ function consultarEstado() {
                 }
                 clearInterval(interval);
                 desbloquearTablero();
-                document.getElementById("resultado").innerHTML = "Realice el siguiente movimiento";
+                document.getElementById("resultado").innerHTML = "<span>Realice el siguiente movimiento</span>";
             }
         }
     };
@@ -105,12 +105,12 @@ function hacerMovimiento(posicion) {
         url = "movimientoJugador.php?pos=" + posicion
                 + "&id=" + document.getElementById("idPartida").value
                 + "&ficha=" + document.getElementById("ficha").value;
-        mensajeEspera = "Esperando movimiento del rival...";
+        mensajeEspera = "<span>Esperando movimiento del rival...</span><img id=\"loading\" src=\"images/loading.gif\" alt=\"gif_cargando\"/>";
     } else {
         url = "movimientoMaquina.php?pos=" + posicion
                 + "&dificultad=" + document.getElementById("tipo").value
                 + "&id=" + document.getElementById("idPartida").value;
-        mensajeEspera = "Calculando movimiento...";
+        mensajeEspera = "<span>Calculando movimiento...</span><img id=\"loading\" src=\"images/loading.gif\" alt=\"gif_cargando\"/>";
     }
     ponerFicha(posicion, document.getElementById("ficha").value);
     bloquearTablero();
@@ -134,7 +134,7 @@ function hacerMovimiento(posicion) {
             if (resultado.length == 2) { //Se sigue la partida
                 ponerFicha(resultado, fichaRival);
                 desbloquearTablero();
-                document.getElementById("resultado").innerHTML = "Realice el siguiente movimiento";
+                document.getElementById("resultado").innerHTML = "<span>Realice el siguiente movimiento</span>";
             } else { //Se termina la partida
                 if (resultado.substr(0, 1) == "R") { //Mostrar ultimo movimiento del rival
                     ponerFicha(resultado.substr(-2, 2), fichaRival);
@@ -145,8 +145,8 @@ function hacerMovimiento(posicion) {
                     alert("ENHORABUENA! Has ganado la partida.");
                 else if (resultado.substr(5, 1) == fichaRival)
                     alert("Has perdido la partida.");
-                document.getElementById("resultado").innerHTML = "Partida finalizada";
-                document.getElementById("resultado2").innerHTML = "<input type='button' value='Volver a jugar' onclick='reiniciarPartida()'/>";
+                document.getElementById("resultado").innerHTML = "<span>Partida finalizada</span>";
+                document.getElementById("resultado2").innerHTML = "<input type='button' value='Volver a jugar' onclick='reiniciarPartida()'/><input type='button' value='Volver al men&uacute;' onclick='volver()'/>";
             }
         }
     };
@@ -184,5 +184,9 @@ function cambiarCasilla(pos, onclickValue) {
 }
 
 function reiniciarPartida() {
+    document.getElementById("datos_partida").submit();
+}
+
+function volver() {
     location.href = "index.xhtml";
 }
