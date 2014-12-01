@@ -74,7 +74,7 @@ function hacerMovimiento(posicion) {
     var url;
     if (document.getElementById("tipo").value == "J") {
 // PARTIDA CONTRA JUGADOR
-        document.getElementById("resultado").innerHTML = "Esperando movimiento del rival...";
+        document.getElementById("resultado").innerHTML = "<span>Esperando movimiento del rival...</span><img id=\"loading\" src=\"images/loading.gif\" alt=\"gif_cargando\"/>";
         url = "movimientoJugador.php?pos=" + posicion
                 + "&id=" + document.getElementById("idPartida").value
                 + "&ficha=" + getFicha();
@@ -118,7 +118,7 @@ function consultarTurno() {
                 clearInterval(intervalConsultarTurno);
                 if (resultado.substr(0, 9) == "continuar") {
                     desbloquearTablero();
-                    document.getElementById("resultado").innerHTML = "Realice el siguiente movimiento";
+                    document.getElementById("resultado").innerHTML = "<span>Realice el siguiente movimiento</span>";
                 } else {
                     //Partida finalizada por la jugada que ha hecho el jugador rival
                     mostrarPartidaFinalizada();
@@ -175,8 +175,8 @@ function calcularResultadoMaquina(XHRObject) {
 }
 
 function mostrarPartidaFinalizada() {
-    document.getElementById("resultado").innerHTML = "Partida finalizada";
-    document.getElementById("resultado2").innerHTML = "<input type='button' value='Volver a jugar' onclick='reiniciarPartida()'/>";
+    document.getElementById("resultado").innerHTML = "<span>Partida finalizada</span>";
+    document.getElementById("resultado2").innerHTML = "<input type='button' value='Volver a jugar' onclick='reiniciarPartida()'/><input type='button' value='Volver al men&uacute;' onclick='volver()'/>";
 }
 
 function bloquearTablero() {
