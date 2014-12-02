@@ -1,0 +1,27 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 01-dic-2014, 10:59:19
+    Author     : yzhan
+*/
+
+.tablero {
+    margin: auto;
+    margin-top: 25px;
+    margin-bottom: 20px;
+}
+
+.tablero th, .tablero td {
+    background-color: #bbe4f8;
+    border-radius: 30px;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+}
+
+.tablero span {
+    font: 60px 'Fredoka One', cursive;
+}

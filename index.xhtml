@@ -11,37 +11,38 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <link rel="stylesheet" href="css/estilo.css" type="text/css" />
         <link href='http://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'/>
-        <script>
-            function deshabilitarDificultades() {
-                var deshabilitado;
-                if (document.getElementById("vsJugador").checked == true)
-                    deshabilitado = true;
-                else
-                    deshabilitado = false;
-                document.getElementById("dificultadFacil").disabled = deshabilitado;
-                document.getElementById("dificultadDificil").disabled = deshabilitado;
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            function mostrarDificultades() {
+                $("#menu1").fadeOut("fast");
+                $("#menu2").fadeIn(1000);
+            }
+
+            function empezarPartida(modo, dificultad) {
+                $("#vs").val(modo);
+                $("#dificultad").val(dificultad);
+                $("#datos_partida").submit();
             }
         </script>
     </head>
     <body>
         <div id="header">        
             <h1>3 en raya</h1>
-        </div>        
-        <form action="partida.php" method="post" enctype="multipart/form-data" >
-            <div>
-                <input type="radio" id="vsMaquina" name="vs" value="maquina" checked="checked" onclick="deshabilitarDificultades()" />vs Maquina
-                <br />
-                <input type="radio" id="vsJugador" name="vs" value="jugador" onclick="deshabilitarDificultades()"/>vs Jugador
+        </div>       
+            <div id="menu1" class="menu">            
+                <span>Escoja su oponente</span>
+                <input type="button" value="vs Maquina" onclick="mostrarDificultades()"/>
+                <input type="button" value="vs Jugador" onclick="empezarPartida('jugador', null)"/>
             </div>
-
-            <div>
-                <input type="radio" id="dificultadFacil" name="dificultad" value="facil" checked="checked" />Facil
-                <br />
-                <input type="radio" id="dificultadDificil" name="dificultad" value="dificil" />Dificil
+            <div id="menu2" style="display:none" class="menu"> 
+                <span>Escoja la dificultad</span>
+                <input type="button" value="F&aacute;cil" onclick="empezarPartida('maquina', 'facil')" />
+                <input type="button" value="Dif&iacute;cil" onclick="empezarPartida('maquina', 'dificil')" />
             </div>
-
+        <form id="datos_partida" action="partida.php"  method="post" enctype="multipart/form-data">
             <div>
-                <input type="submit" value="Jugar" />
+                <input type="hidden" id="vs" name="vs" value="" /> <!-- [maquina|jugador] -->
+                <input type="hidden" id="dificultad" name="dificultad" value="" /> <!-- [facil|dificil] -->
             </div>
         </form>
     </body>
