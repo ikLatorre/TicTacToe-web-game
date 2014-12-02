@@ -7,14 +7,14 @@ function ponerFicha(pos, ficha) {
     document.getElementById("div" + pos).removeAttribute("onclick");
 }
 
-function getFichaRival(){
+function getFichaRival() {
     if (getFicha() == "O")
         return "X";
     else
         return "O";
 }
 
-function getFicha(){
+function getFicha() {
     return document.getElementById("ficha").value;
 }
 
@@ -44,7 +44,7 @@ function prepararTablero() {
                 } else {
                     //Actualizar estado del tablero y dejar desbloqueadas las casillas correspondientes
                     var casillas = partidaXML.getElementsByTagName("casilla");
-                    for (i = 0; i < casillas.length; i++) 
+                    for (i = 0; i < casillas.length; i++)
                         if (casillas[i].childNodes.length > 0) { //Si tiene una ficha
                             var ficha = casillas[i].childNodes[0];
                             if (ficha.childNodes[0].nodeValue == "O") {
@@ -69,7 +69,7 @@ function hacerMovimiento(posicion) {
         XHRObject = new XMLHttpRequest();
     else
         XHRObject = new ActiveXObject("Microsoft.XMLHTTP");
-    
+
     ponerFicha(posicion, getFicha());
     bloquearTablero();
     var url;
@@ -80,7 +80,9 @@ function hacerMovimiento(posicion) {
                 + "&id=" + document.getElementById("idPartida").value
                 + "&ficha=" + getFicha();
         XHRObject.open("GET", url, "true");
-        XHRObject.onreadystatechange = function () {  calcularResultadoJugada(XHRObject); };
+        XHRObject.onreadystatechange = function () {
+            calcularResultadoJugada(XHRObject);
+        };
     } else {
         // PARTIDA CONTRA MAQUINA
         document.getElementById("resultado").innerHTML = "<span>Calculando movimiento...</span><img id=\"loading\" src=\"images/loading.gif\" alt=\"gif_cargando\"/>";
@@ -88,7 +90,9 @@ function hacerMovimiento(posicion) {
                 + "&dificultad=" + document.getElementById("tipo").value
                 + "&id=" + document.getElementById("idPartida").value;
         XHRObject.open("GET", url, "true");
-        XHRObject.onreadystatechange = function () {  calcularResultadoMaquina(XHRObject); };
+        XHRObject.onreadystatechange = function () {
+            calcularResultadoMaquina(XHRObject);
+        };
     }
     XHRObject.send();
 }
@@ -104,23 +108,23 @@ function consultarTurno() {
         XHRObject = new XMLHttpRequest();
     else
         XHRObject = new ActiveXObject("Microsoft.XMLHTTP");
-    
-    var url = "consultarTurnoJugador.php?id=" + + document.getElementById("idPartida").value
-             + "&ficha=" + getFicha();
+
+    var url = "consultarTurnoJugador.php?id=" + +document.getElementById("idPartida").value
+            + "&ficha=" + getFicha();
     XHRObject.open('GET', url, true);
     XHRObject.onreadystatechange = function () {
         if (XHRObject.readyState == 4 && XHRObject.status == 200) {
-            var resultado = XHRObject.responseText;
-            if(resultado != "esperar"){
-                ponerFicha(resultado.substr(-2, 2), getFichaRival());
+            var resultado = JSON.parse(XHRObject.responseText);
+            if (resultado['jugada'] != "esperar") {
+                ponerFicha(resultado['jugada'], getFichaRival());
                 clearInterval(intervalConsultarTurno);
-                if(resultado.substr(0, 9) == "continuar"){
+                if (resultado['estado'] == "continuar") {
                     desbloquearTablero();
                     document.getElementById("resultado").innerHTML = "<span>Realice el siguiente movimiento</span>";
-                }else{
+                } else {
                     //Partida finalizada por la jugada que ha hecho el jugador rival
                     mostrarPartidaFinalizada();
-                    if(resultado.substr(0, 6) == "empate")
+                    if (resultado['estado'] == "empate")
                         alert("Se ha empatado la partida.");
                     else
                         alert("Has perdido la partida.");
@@ -131,45 +135,45 @@ function consultarTurno() {
     XHRObject.send('');
 }
 
-function calcularResultadoJugada(XHRObject){
+function calcularResultadoJugada(XHRObject) {
     if (XHRObject.readyState == 4 && XHRObject.status == 200) {
-        var resultado = XHRObject.responseText;
-        if(resultado != "continuar"){
+        var resultado = JSON.parse(XHRObject.responseText);
+        if (resultado['estado'] != "continuar") {
             //Partida finalizada por la jugada que ha hecho el jugador
             mostrarPartidaFinalizada();
-            if(resultado == "empate")
+            if (resultado['estado'] == "empate")
                 alert("Se ha empatado la partida.");
             else
                 alert("ENHORABUENA! Has ganado la partida.");
-        }else
-            esperarTurno(); 
+        } else
+            esperarTurno();
     }
 }
 
-function calcularResultadoMaquina(XHRObject){
+function calcularResultadoMaquina(XHRObject) {
     if (XHRObject.readyState == 4 && XHRObject.status == 200) {
-        var resultado = XHRObject.responseText;
+        var resultado = JSON.parse(XHRObject.responseText);
         var fichaRival = getFichaRival();
-        if (resultado.length == 2) { //Se sigue la partida
-            ponerFicha(resultado, fichaRival);
+        if (resultado['estado'] == "continuar") { //Se sigue la partida
+            ponerFicha(resultado['jugada'], fichaRival);
             desbloquearTablero();
             document.getElementById("resultado").innerHTML = "<span>Realice el siguiente movimiento</span>";
         } else { //Se termina la partida
-            if (resultado.substr(0, 1) == "R") { //Mostrar ultimo movimiento del rival
-                ponerFicha(resultado.substr(-2, 2), fichaRival);
+            if (resultado['jugador'] == "R") { //Mostrar ultimo movimiento del rival
+                ponerFicha(resultado['jugada'], fichaRival);
             }
-            if (resultado.substr(1, 6) == "empate")
+            if (resultado['estado'] == "empate")
                 alert("Se ha empatado la partida.");
-            else if (resultado.substr(5, 1) != fichaRival)
+            else if (resultado['estado'] != "gana" + fichaRival)
                 alert("ENHORABUENA! Has ganado la partida.");
-            else if (resultado.substr(5, 1) == fichaRival)
+            else if (resultado['estado'] == "gana" + fichaRival)
                 alert("Has perdido la partida.");
             mostrarPartidaFinalizada();
         }
     }
 }
 
-function mostrarPartidaFinalizada(){
+function mostrarPartidaFinalizada() {
     document.getElementById("resultado").innerHTML = "<span>Partida finalizada</span>";
     document.getElementById("resultado2").innerHTML = "<input type='button' value='Volver a jugar' onclick='reiniciarPartida()'/><input type='button' value='Volver al men&uacute;' onclick='volver()'/>";
 }

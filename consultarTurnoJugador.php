@@ -80,8 +80,11 @@ function consultarTurno() {
                 return "esperar";   
 }
 
-$turno = consultarTurno();
-if($turno == "esperar")
-    echo "esperar";
-else
-    echo getEstado() . $turno; //Devuelve el estado y el ultimo movimiento realizado
+$response = array('jugador' => "", 'estado' => "", 'jugada' => "");
+$response['jugada'] = consultarTurno();
+if($response['jugada'] == "esperar")
+    echo json_encode($response);
+else{
+    $response['estado'] = getEstado();
+    echo json_encode($response); //Devuelve el estado y el ultimo movimiento realizado
+}
