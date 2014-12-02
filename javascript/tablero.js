@@ -120,7 +120,7 @@ function consultarTurno() {
                 }else{
                     //Partida finalizada por la jugada que ha hecho el jugador rival
                     mostrarPartidaFinalizada();
-                    if(resultado == "empate")
+                    if(resultado.substr(0, 6) == "empate")
                         alert("Se ha empatado la partida.");
                     else
                         alert("Has perdido la partida.");
