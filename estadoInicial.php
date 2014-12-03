@@ -1,11 +1,12 @@
 <?php
+require_once('movimientos.inc');
 
 /*
  * Devuelve la partida con el 'id' dado en formato XML.
  * Es ejecutado mediante AJAX al unirse a una partida jugador vs jugador, y poder inicializar
  * el tablero con el movimiento que realiza el que crea la partida, si hiciera falta. 
  */
-$partidasXML = simplexml_load_file ("partidas.xml");
+$partidasXML = getPartidasXML();
 foreach($partidasXML->partida as $partida){
     if($partida['id'] == "partida".$_REQUEST['id']){
         //Generar xml de la partida

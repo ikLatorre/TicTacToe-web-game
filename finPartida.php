@@ -1,4 +1,4 @@
 <?php
-require_once('movimientos.php');
+require_once('movimientos.inc');
 
-setPartidaTerminada();
+setPartidaTerminada("porAbandono");

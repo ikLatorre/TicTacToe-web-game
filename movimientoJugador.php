@@ -1,10 +1,10 @@
 <?php
-require_once('movimientos.php');
+require_once('movimientos.inc');
 
 setJugada($_REQUEST ['pos'], $_REQUEST['ficha']);
 $estado = getEstado(); //Obtener nuevo estado de la partida
 if ($estado != "continuar")
-    setPartidaTerminada();
+    setPartidaTerminada("noPorAbandono");
 echo $estado;
 
 

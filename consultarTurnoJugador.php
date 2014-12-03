@@ -1,5 +1,5 @@
 <?php
-require_once('movimientos.php');
+require_once('movimientos.inc');
 
 $response = array('jugada' => (string)consultarTurno(), 'estado' => "");
 if($response['jugada'] == "esperar" || $response['jugada'] == "abandonoRival")
@@ -20,7 +20,7 @@ function consultarTurno() {
     $partidasXML = getPartidasXML ();
     foreach($partidasXML->partida as $partida)
         if($partida['id'] == "partida".$_REQUEST['id']){
-            if($partida['terminada'] == "si")
+            if($partida['terminada'] == "si" && $partida['abandonada'] == "si")
                 return "abandonoRival";
             if($partida['siguiente'] == $_REQUEST['ficha'])
                 return $partida['ultimoMov'];   

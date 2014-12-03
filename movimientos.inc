@@ -87,13 +87,16 @@ function setFichaJugada($partida, $jugada, $jugador){
             }       
 }
 
-function setPartidaTerminada() {
+function setPartidaTerminada($razonTerminar) {
     $partidasXML = getPartidasXML();
     foreach ($partidasXML->partida as $partida)
         if ($partida['id'] == "partida" . $_REQUEST['id']) {
             $partida['terminada'] = "si";
+            if($razonTerminar == "porAbandono") 
+                $partida['abandonada'] = "si";
             break;
         }
     $partidasXML->saveXML("partidas.xml");
     return true;
 }
+?>

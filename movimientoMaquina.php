@@ -1,5 +1,5 @@
 <?php
-require_once('movimientos.php');
+require_once('movimientos.inc');
 
 /*
  * Almacenar movimiento del jugador y, si no se ha terminado la partida,
@@ -17,13 +17,13 @@ if ($response['estado'] == "continuar") {
     if ($response['estado'] == "continuar")
         echo json_encode($response); //Partida no terminada, devuelve movimiento de la maquina
     else {
-        setPartidaTerminada();
+        setPartidaTerminada("noPorAbandono");
         //Partida terminada, devuelve ultimo movimiento del rival ('R'), la maquina
         $response['jugador'] = "R";
         echo json_encode($response); 
     }
 } else {
-    setPartidaTerminada();
+    setPartidaTerminada("noPorAbandono");
     // Partida terminada por el movimiento del jugador ('J')
     $response['jugador'] = "J";
     echo json_encode($response); 

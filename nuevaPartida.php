@@ -55,6 +55,7 @@ function crearPartida($partidasXML, $tipo){
     if($tipo == "jugador"){
         $nuevaPartida['siguiente'] = "O";
         $nuevaPartida['ultimoMov'] = "";
+        $nuevaPartida['abandonada'] = "no";
     }
     $nuevaCasilla1 = $nuevaPartida->addChild('casilla');
     $nuevaCasilla1['id'] = "00";
