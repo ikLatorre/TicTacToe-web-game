@@ -18,13 +18,23 @@ $datosInicializacion = calcularIdPartida();
         <link href='http://fonts.googleapis.com/css?family=Fredoka+One' rel='stylesheet' type='text/css'/>
         <script type="text/javascript" src="javascript/tablero.js" ></script>
         <script type="text/javascript">
-            window.onbeforeunload = finalizarPartida;  //Al cerrar la ventana
+            window.onbeforeunload = function () {
+                if ((document.getElementById("partidaFinalizada")).value == "no") {
+                    return "Hay una partida en curso.";
+                }
+            };  //Al cerrar la ventana
+            window.onunload = function () {
+                var XHRObject = new XMLHttpRequest();
+                var url = "finPartida.php?id=" + document.getElementById("idPartida").value;
+                XHRObject.open('GET', url, false);
+                XHRObject.send();
+            };
         </script>
     </head>
 
     <body onload="prepararTablero()" >
         <header id="header">        
-            <h1>3 en raya</h1>
+            <h1><a href="index.xhtml">3 en raya</a></h1>
         </header>
         <table class="tablero">
             <tr>
@@ -62,13 +72,13 @@ $datosInicializacion = calcularIdPartida();
             </tr>
         </table>
 
-        <div id="resultado" class="menu"></div>
-        <div id="resultado2" class="menu"></div>
+        <div id="resultado" class="menu2"></div>
+        <div id="resultado2" class="menu2"></div>
 
         <input type="hidden" id="ficha" name="ficha" value="<?php echo($datosInicializacion['ficha']); ?>" /> <!-- [O|X] -->
         <input type="hidden" id="idPartida" name="idPartida" value="<?php echo($datosInicializacion['idPartida']); ?>" /> <!-- id -->
         <input type="hidden" id="tipo" name="tipo" value="<?php echo($datosInicializacion['tipo']); ?>" /> <!-- [F|D|J] -->
-        <input type="hidden" id="partidaFinalizada" name="partidaFinalizada" value="no" /> <!-- [F|D|J] -->
+        <input type="hidden" id="partidaFinalizada" name="partidaFinalizada" value="no" /> <!-- [si|no] -->
 
         <form id="datos_partida" method="post">
             <input type="hidden" id="vs" name="vs" value="<?php echo $_REQUEST['vs']; ?>" /> <!-- [maquina|jugador] -->

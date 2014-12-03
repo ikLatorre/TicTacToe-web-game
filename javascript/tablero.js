@@ -264,7 +264,9 @@ function preguntarSalida(){
   * 'hidden' cuyo id es 'partidaFinalizada'. 
   */
  function finalizarPartida(){
-    if(document.getElementById("partidaFinalizada").value == "no"){
+    var partidaFinalizada = document.getElementById("partidaFinalizada");
+    if (partidaFinalizada.value == "no") {
+        partidaFinalizada.value = "si";
         var XHRObject = getXHRObject();
         var url = "finPartida.php?id=" + document.getElementById("idPartida").value;
         XHRObject.open('GET', url, true);
