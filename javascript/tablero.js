@@ -28,10 +28,8 @@ function prepararTablero() {
         XHRObject.open('GET', 'estadoInicial.php?id=' + document.getElementById("idPartida").value, true);
         XHRObject.onreadystatechange = function () {
             if (XHRObject.readyState == 4 && XHRObject.status == 200) {
-                var partidaString = XHRObject.responseText;
-                var parser = new DOMParser();
-                var partidaXML = parser.parseFromString(partidaString, 'text/xml');
-
+                var partidaXML = XHRObject.responseXML;
+                
                 //Establecer el estado del tablero y turno correctos
                 if (partidaXML.getElementsByTagName("partida")[0].getAttribute("siguiente") == "O") {
                     //Bloquear todo el tablero, a la espera del primer movimiento de la partida, del rival
