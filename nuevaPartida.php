@@ -1,10 +1,5 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 function calcularIdPartida(){
     $fich_partida = "partidas.xml";
     if (! file_exists ( $fich_partida ))
@@ -27,7 +22,10 @@ function calcularIdPartida(){
     }else
         //Crear partida jugador vs maquina de tipo 'facil' o 'dificil'
         $respuesta = crearPartida($partidasXML, $tipo);
-    return $respuesta; //Devuelve el tipo (F, D, J), la ficha a usar (O, X) y el id de partida.
+    
+    //Devuelve el tipo (F, D, J), la ficha a usar (O, X) y el id de partida
+    return array('tipo' => substr($respuesta, 0, 1), 'ficha' => substr($respuesta, 1, 1), 
+                 'idPartida' => substr($respuesta, 2));
 }
 
 function crearPartida($partidasXML, $tipo){
@@ -79,4 +77,3 @@ function buscarPartidaJugador($partidasXML){
         }
     return "";
 }
-?>

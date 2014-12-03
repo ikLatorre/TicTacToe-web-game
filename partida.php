@@ -3,7 +3,7 @@ if (!isset($_REQUEST['vs'])) {
     header("Location: index.xhtml");
 }
 require_once("nuevaPartida.php");
-$tipo_ficha_id = calcularIdPartida();
+$datosInicializacion = calcularIdPartida();
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -16,9 +16,12 @@ $tipo_ficha_id = calcularIdPartida();
         <link href='http://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'/>
         <link href='http://fonts.googleapis.com/css?family=Fredoka+One' rel='stylesheet' type='text/css'/>
         <script type="text/javascript" src="javascript/tablero.js" ></script>
+        <script type="text/javascript">
+            window.onbeforeunload = finalizarPartida;  //Al cerrar la ventana
+        </script>
     </head>
 
-    <body onload="prepararTablero()">
+    <body onload="prepararTablero()" >
         <header id="header">        
             <h1>3 en raya</h1>
         </header>
@@ -61,10 +64,10 @@ $tipo_ficha_id = calcularIdPartida();
         <div id="resultado" class="menu"></div>
         <div id="resultado2" class="menu"></div>
 
-        <input type="hidden" id="ficha" name="ficha" value="<?php echo(substr($tipo_ficha_id, 1, 1)); ?>" /> <!-- [O|X] -->
-        <input type="hidden" id="idPartida" name="idPartida" value="<?php echo(substr($tipo_ficha_id, 2)); ?>" /> <!-- id -->
-        <input type="hidden" id="tipo" name="tipo" value="<?php echo(substr($tipo_ficha_id, 0, 1)); ?>" /> <!-- [F|D|J] -->
-<?php //echo($tipo_ficha_id);  ?>
+        <input type="hidden" id="ficha" name="ficha" value="<?php echo($datosInicializacion['ficha']); ?>" /> <!-- [O|X] -->
+        <input type="hidden" id="idPartida" name="idPartida" value="<?php echo($datosInicializacion['idPartida']); ?>" /> <!-- id -->
+        <input type="hidden" id="tipo" name="tipo" value="<?php echo($datosInicializacion['tipo']); ?>" /> <!-- [F|D|J] -->
+        <input type="hidden" id="partidaFinalizada" name="partidaFinalizada" value="no" /> <!-- [F|D|J] -->
 
         <form id="datos_partida" method="post">
             <input type="hidden" id="vs" name="vs" value="<?php echo $_REQUEST['vs']; ?>" /> <!-- [maquina|jugador] -->

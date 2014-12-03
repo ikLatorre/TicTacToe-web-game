@@ -1,11 +1,5 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 $partidasXML = simplexml_load_file ("partidas.xml");
 foreach($partidasXML->partida as $partida){
     if($partida['id'] == "partida".$_REQUEST['id']){
@@ -25,4 +19,3 @@ foreach($partidasXML->partida as $partida){
         exit();
     }
 }
-?>

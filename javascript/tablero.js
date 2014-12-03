@@ -22,12 +22,9 @@ function getFicha() {
 //En el caso de ser el jugador que se une a una partida, bloquear tablero hasta que el rival haga el primer
 //movimiento, o actualizarlo con el primer movimiento que ha hecho el rival.
 function prepararTablero() {
+    document.getElementById("resultado2").innerHTML = "<input type='button' value='Abandonar partida' onclick='preguntarSalida()'/>";
     if (document.getElementById("tipo").value == "J" && getFicha() == "X") {
-        var XHRObject;
-        if (XMLHttpRequest)
-            XHRObject = new XMLHttpRequest();
-        else
-            XHRObject = new ActiveXObject("Microsoft.XMLHTTP");
+        var XHRObject = getXHRObject();
         XHRObject.open('GET', 'estadoInicial.php?id=' + document.getElementById("idPartida").value, true);
         XHRObject.onreadystatechange = function () {
             if (XHRObject.readyState == 4 && XHRObject.status == 200) {
@@ -64,11 +61,7 @@ function prepararTablero() {
 }
 
 function hacerMovimiento(posicion) {
-    var XHRObject;
-    if (XMLHttpRequest)
-        XHRObject = new XMLHttpRequest();
-    else
-        XHRObject = new ActiveXObject("Microsoft.XMLHTTP");
+    var XHRObject = getXHRObject();
 
     ponerFicha(posicion, getFicha());
     bloquearTablero();
@@ -103,18 +96,18 @@ function esperarTurno() {
     intervalConsultarTurno = setInterval(consultarTurno, 3000);
 }
 function consultarTurno() {
-    var XHRObject;
-    if (XMLHttpRequest)
-        XHRObject = new XMLHttpRequest();
-    else
-        XHRObject = new ActiveXObject("Microsoft.XMLHTTP");
-
-    var url = "consultarTurnoJugador.php?id=" + +document.getElementById("idPartida").value
+    var XHRObject = getXHRObject();
+    var url = "consultarTurnoJugador.php?id=" + document.getElementById("idPartida").value
             + "&ficha=" + getFicha();
     XHRObject.open('GET', url, true);
     XHRObject.onreadystatechange = function () {
         if (XHRObject.readyState == 4 && XHRObject.status == 200) {
             var resultado = JSON.parse(XHRObject.responseText);
+            if(resultado['jugada'] == "abandonoRival"){
+                mostrarPartidaFinalizada();  
+                clearInterval(intervalConsultarTurno);
+                alert("ENHORABUENA! Has ganado la partida por abandono del rival.");
+            }
             if (resultado['jugada'] != "esperar") {
                 ponerFicha(resultado['jugada'], getFichaRival());
                 clearInterval(intervalConsultarTurno);
@@ -137,11 +130,11 @@ function consultarTurno() {
 
 function calcularResultadoJugada(XHRObject) {
     if (XHRObject.readyState == 4 && XHRObject.status == 200) {
-        var resultado = JSON.parse(XHRObject.responseText);
-        if (resultado['estado'] != "continuar") {
+        var resultado = XHRObject.responseText;
+        if (resultado != "continuar") {
             //Partida finalizada por la jugada que ha hecho el jugador
             mostrarPartidaFinalizada();
-            if (resultado['estado'] == "empate")
+            if (resultado == "empate")
                 alert("Se ha empatado la partida.");
             else
                 alert("ENHORABUENA! Has ganado la partida.");
@@ -171,11 +164,6 @@ function calcularResultadoMaquina(XHRObject) {
             mostrarPartidaFinalizada();
         }
     }
-}
-
-function mostrarPartidaFinalizada() {
-    document.getElementById("resultado").innerHTML = "<span>Partida finalizada</span>";
-    document.getElementById("resultado2").innerHTML = "<input type='button' value='Volver a jugar' onclick='reiniciarPartida()'/><input type='button' value='Volver al men&uacute;' onclick='volver()'/>";
 }
 
 function bloquearTablero() {
@@ -215,3 +203,41 @@ function reiniciarPartida() {
 function volver() {
     location.href = "index.xhtml";
 }
+
+function mostrarPartidaFinalizada() {
+    document.getElementById("resultado").innerHTML = "<span>Partida finalizada</span>";
+    document.getElementById("resultado2").innerHTML = "<input type='button' value='Volver a jugar' onclick='reiniciarPartida()'/><input type='button' value='Volver al men&uacute;' onclick='volver()'/>";
+    document.getElementById("partidaFinalizada").innerHTML = "si";
+}
+
+function getXHRObject(){
+    var XHRObject;
+    if (XMLHttpRequest)
+        XHRObject = new XMLHttpRequest();
+    else
+        XHRObject = new ActiveXObject("Microsoft.XMLHTTP");
+    return XHRObject;
+}
+
+function preguntarSalida(){    
+   if (confirm("Est\u00e1 seguro de abandonar la partida?")){
+       mostrarPartidaFinalizada();
+       bloquearTablero();
+       finalizarPartida();
+       clearInterval(intervalConsultarTurno);
+       alert("Has perdido la partida.");
+   }
+ }
+ 
+ function finalizarPartida(){
+    //Cambiar estado de la partida como terminada si asi lo indica el campo 'hidden',
+    //ya que este metodo (ademas de por 'preguntarSalida()') es llamado tambien
+    //al cerrar la pestaña del navegador, que podria ser una vez finalizada una partida.
+    if(document.getElementById("partidaFinalizada").value == "no"){
+        var XHRObject = getXHRObject();
+        var url = "finPartida.php?id=" + document.getElementById("idPartida").value;
+        XHRObject.open('GET', url, true);
+        XHRObject.send();
+    }
+    return;
+ }
