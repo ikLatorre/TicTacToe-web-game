@@ -2,12 +2,16 @@
 require_once('movimientos.php');
 
 setJugada($_REQUEST ['pos'], $_REQUEST['ficha']);
-$estado = getEstado();
+$estado = getEstado(); //Obtener nuevo estado de la partida
 if ($estado != "continuar")
     setPartidaTerminada();
 echo $estado;
 
 
+/*
+ * Almacenar la ficha del jugador [O|X] en la partida,
+ * y actualizar turno y ultimo movimiento.
+ */
 function setJugada($jugada, $jugador) {
     if ($jugador == "O")
         $jugadorRival = "X";

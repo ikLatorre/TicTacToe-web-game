@@ -3,6 +3,7 @@ if (!isset($_REQUEST['vs'])) {
     header("Location: index.xhtml");
 }
 require_once("nuevaPartida.php");
+//Calcular datos de la nueva partida para almacenarlos en campos 'hidden' (al final de la pagina)
 $datosInicializacion = calcularIdPartida();
 ?>
 

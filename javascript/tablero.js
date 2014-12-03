@@ -1,4 +1,5 @@
 
+//Poner la ficha [O|X] dada en la posicion 'XX' del tablero 3x3
 function ponerFicha(pos, ficha) {
     var color;
     (getFicha() == ficha) ? color = "blue" : color = "red";
@@ -18,11 +19,12 @@ function getFicha() {
     return document.getElementById("ficha").value;
 }
 
-//Se hace onLoad, preparar tablero y turno. Siempre empieza la ficha O, del jugador que la crea.)
+//Se hace onLoad, preparar tablero y turno. Siempre empieza la ficha O, del jugador que la crea.
 //En el caso de ser el jugador que se une a una partida, bloquear tablero hasta que el rival haga el primer
 //movimiento, o actualizarlo con el primer movimiento que ha hecho el rival.
 function prepararTablero() {
     document.getElementById("resultado2").innerHTML = "<input type='button' value='Abandonar partida' onclick='preguntarSalida()'/>";
+    
     if (document.getElementById("tipo").value == "J" && getFicha() == "X") {
         var XHRObject = getXHRObject();
         XHRObject.open('GET', 'estadoInicial.php?id=' + document.getElementById("idPartida").value, true);
@@ -88,59 +90,10 @@ function hacerMovimiento(posicion) {
     XHRObject.send();
 }
 
-var intervalConsultarTurno; //Almacenar interval para detenerlo cuando no se necesite
-
-function esperarTurno() {
-    intervalConsultarTurno = setInterval(consultarTurno, 3000);
-}
-function consultarTurno() {
-    var XHRObject = getXHRObject();
-    var url = "consultarTurnoJugador.php?id=" + document.getElementById("idPartida").value
-            + "&ficha=" + getFicha();
-    XHRObject.open('GET', url, true);
-    XHRObject.onreadystatechange = function () {
-        if (XHRObject.readyState == 4 && XHRObject.status == 200) {
-            var resultado = JSON.parse(XHRObject.responseText);
-            if(resultado['jugada'] == "abandonoRival"){
-                mostrarPartidaFinalizada();  
-                clearInterval(intervalConsultarTurno);
-                alert("ENHORABUENA! Has ganado la partida por abandono del rival.");
-            }
-            if (resultado['jugada'] != "esperar") {
-                ponerFicha(resultado['jugada'], getFichaRival());
-                clearInterval(intervalConsultarTurno);
-                if (resultado['estado'] == "continuar") {
-                    desbloquearTablero();
-                    document.getElementById("resultado").innerHTML = "<span>Realice el siguiente movimiento</span>";
-                } else {
-                    //Partida finalizada por la jugada que ha hecho el jugador rival
-                    mostrarPartidaFinalizada();
-                    if (resultado['estado'] == "empate")
-                        alert("Se ha empatado la partida.");
-                    else
-                        alert("Has perdido la partida.");
-                }
-            }
-        }
-    };
-    XHRObject.send('');
-}
-
-function calcularResultadoJugada(XHRObject) {
-    if (XHRObject.readyState == 4 && XHRObject.status == 200) {
-        var resultado = XHRObject.responseText;
-        if (resultado != "continuar") {
-            //Partida finalizada por la jugada que ha hecho el jugador
-            mostrarPartidaFinalizada();
-            if (resultado == "empate")
-                alert("Se ha empatado la partida.");
-            else
-                alert("ENHORABUENA! Has ganado la partida.");
-        } else
-            esperarTurno();
-    }
-}
-
+/*
+ * Se ejecuta al hacer un movimiento en una partida jugador vs maquina,
+ * y evalúa el resultado AJAX de haber realizado dicho movimiento.
+ */
 function calcularResultadoMaquina(XHRObject) {
     if (XHRObject.readyState == 4 && XHRObject.status == 200) {
         var resultado = JSON.parse(XHRObject.responseText);
@@ -164,6 +117,71 @@ function calcularResultadoMaquina(XHRObject) {
     }
 }
 
+/*
+ * Se ejecuta al hacer un movimiento en una partida jugador vs jugador,
+ * y evalúa el resultado AJAX de haber realizado dicho movimiento.
+ */
+function calcularResultadoJugada(XHRObject) {
+    if (XHRObject.readyState == 4 && XHRObject.status == 200) {
+        var resultado = XHRObject.responseText;
+        if (resultado != "continuar") {
+            //Partida finalizada por la jugada que ha hecho el jugador
+            mostrarPartidaFinalizada();
+            if (resultado == "empate")
+                alert("Se ha empatado la partida.");
+            else
+                alert("ENHORABUENA! Has ganado la partida.");
+        } else
+            esperarTurno();
+    }
+}
+
+var intervalConsultarTurno; //Almacenar interval para detenerlo cuando no se necesite
+
+function esperarTurno() {
+    intervalConsultarTurno = setInterval(consultarTurno, 3000);
+}
+
+/*
+ * Consultar el turno de la partida, o mostrar el mensaje correspondiente
+ * si la partida ha finalizado por el movimiento del rival.
+ */
+function consultarTurno() {
+    var XHRObject = getXHRObject();
+    var url = "consultarTurnoJugador.php?id=" + document.getElementById("idPartida").value
+            + "&ficha=" + getFicha();
+    XHRObject.open('GET', url, true);
+    XHRObject.onreadystatechange = function () {
+        if (XHRObject.readyState == 4 && XHRObject.status == 200) {
+            var resultado = JSON.parse(XHRObject.responseText);
+            if(resultado['jugada'] == "abandonoRival"){
+                mostrarPartidaFinalizada();  
+                clearInterval(intervalConsultarTurno);
+                alert("ENHORABUENA! Has ganado la partida por abandono del rival.");
+            }else if (resultado['jugada'] != "esperar") {
+                ponerFicha(resultado['jugada'], getFichaRival());
+                clearInterval(intervalConsultarTurno);
+                if (resultado['estado'] == "continuar") {
+                    desbloquearTablero();
+                    document.getElementById("resultado").innerHTML = "<span>Realice el siguiente movimiento</span>";
+                } else {
+                    //Partida finalizada por la jugada que ha hecho el jugador rival
+                    mostrarPartidaFinalizada();
+                    if (resultado['estado'] == "empate")
+                        alert("Se ha empatado la partida.");
+                    else
+                        alert("Has perdido la partida.");
+                }
+            }
+        }
+    };
+    XHRObject.send('');
+}
+
+/*
+ * Bloquear casillas restantes de la partida 
+ * (anular evento onClick de los div's asociados a ellas).
+ */ 
 function bloquearTablero() {
     cambiarCasilla("00", null);
     cambiarCasilla("01", null);
@@ -176,6 +194,10 @@ function bloquearTablero() {
     cambiarCasilla("22", null);
 }
 
+/*
+ * Desbloquear casillas restantes de la partida 
+ * (reestablecer evento onClick de los div's asociados a ellas).
+ */ 
 function desbloquearTablero() {
     cambiarCasilla("00", "hacerMovimiento('00')");
     cambiarCasilla("01", "hacerMovimiento('01')");
@@ -188,12 +210,18 @@ function desbloquearTablero() {
     cambiarCasilla("22", "hacerMovimiento('22')");
 }
 
+/* Asignar el evento 'onclickValue' dado al atributo onClick de la casilla
+ * especificada con la posición, si existiera. Si no existe dicho atributo significa
+ * que la casilla ha sido ya marcada, no siendo ya una de las restantes
+ * disponibles de la partida.
+ */
 function cambiarCasilla(pos, onclickValue) {
     var obj = document.getElementById("div" + pos);
     if (obj.hasAttribute("onclick"))
         obj.setAttribute("onclick", onclickValue);
 }
 
+// Reiniciar el tipo de partida jugado (facil, dificil o vs jugador).
 function reiniciarPartida() {
     document.getElementById("datos_partida").submit();
 }
@@ -227,10 +255,15 @@ function preguntarSalida(){
    }
  }
  
+ /*
+  * Cambiar estado de la partida como terminada en el XML. 
+  * 
+  * Este metodo (ademas de por 'preguntarSalida()' al darle al botón 'Abandonar partida') 
+  * es llamado tambien al cerrar la pestaña del navegador. En consecuencia, puede ser
+  * llamado terminada o no la partida, de modo que se comprueba con el campo 
+  * 'hidden' cuyo id es 'partidaFinalizada'. 
+  */
  function finalizarPartida(){
-    //Cambiar estado de la partida como terminada si asi lo indica el campo 'hidden',
-    //ya que este metodo (ademas de por 'preguntarSalida()') es llamado tambien
-    //al cerrar la pestaña del navegador, que podria ser una vez finalizada una partida.
     if(document.getElementById("partidaFinalizada").value == "no"){
         var XHRObject = getXHRObject();
         var url = "finPartida.php?id=" + document.getElementById("idPartida").value;

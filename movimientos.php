@@ -5,6 +5,8 @@ function getPartidasXML() {
     return simplexml_load_file($fich_partida);
 }
 
+
+// Devuelve una matriz 3x3 de la partida (con el 'id' dado), obtenida del XML. 
 function getTablero() {
     $partidasXML = getPartidasXML();
     //Obtener tablero de la partida del usuario (segun id de la sesion)
@@ -75,10 +77,11 @@ function getGanador($raya, $partida) {
         return "";
 }
 
+//Modificar la partida, asignando la ficha del jugador [O|X] en la posicion de la jugada 'XX'.
 function setFichaJugada($partida, $jugada, $jugador){
     foreach ($partida->casilla as $casilla)
         foreach ($casilla->attributes() as $a => $b)
-            if ($b == $jugada){
+            if ($b == $jugada){ //Casilla de la posicion 'XX' dada
                 $casilla->addChild("ficha", $jugador);
                 return $partida;
             }       

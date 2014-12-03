@@ -1,6 +1,11 @@
 <?php
 require_once('movimientos.php');
 
+/*
+ * Almacenar movimiento del jugador y, si no se ha terminado la partida,
+ * calcular el movimiento de la maquina. Calcular y devolver tambien estados 
+ * de las partidas una vez hechos los movimentos.
+ */
 $response = array('jugador' => "", 'estado' => "", 'jugada' => "");
 $response['jugada'] = $_REQUEST['pos'];
 setJugada($response['jugada'], "O");
@@ -10,21 +15,25 @@ if ($response['estado'] == "continuar") {
     setJugada($response['jugada'], "X");
     $response['estado'] = getEstado();
     if ($response['estado'] == "continuar")
-        echo json_encode($response); //$jugada;
+        echo json_encode($response); //Partida no terminada, devuelve movimiento de la maquina
     else {
         setPartidaTerminada();
-        // Mostrar movimiento ganador del rival (R), la maquina.
+        //Partida terminada, devuelve ultimo movimiento del rival ('R'), la maquina
         $response['jugador'] = "R";
-        echo json_encode($response); //echo "R" . $estado . $jugada;
+        echo json_encode($response); 
     }
 } else {
     setPartidaTerminada();
-    // Termina la partida por el movimiento del jugador.
+    // Partida terminada por el movimiento del jugador ('J')
     $response['jugador'] = "J";
-    echo json_encode($response); //echo "J" . $estado;
+    echo json_encode($response); 
 }
 
 
+/*
+ * Devuelve la posicion 'XX' en el tablero del siguiente movimiento 
+ * de la maquina, especificando la dificultad [facil|dificil].
+ */
 function getMovimiento($dificultad) {
     $partida = getTablero();
     if ($dificultad == "D")
@@ -50,9 +59,14 @@ function getMovimiento($dificultad) {
         return $jugada; //Devolver la jugada bloquente (para evitar derrota de la maquina)
 }
 
+/*
+ * Se analizan todas las rayas posibles del tablero, buscando las que estén a punto
+ * de ser completadas por el jugador (ficha 'O' siempre). Devuelve la posición
+ * 'XX' para evitar la victoria del jugador, o un string vacío e.c.c.
+ */
 function getMovimientoBloqueante($partida) {
     $rayas = array(
-        array(0, 0, 0, 1, 0, 2),
+        array(0, 0, 0, 1, 0, 2), //Raya horizontal superior, etc.
         array(1, 0, 1, 1, 1, 2),
         array(2, 0, 2, 1, 2, 2),
         array(0, 0, 1, 0, 2, 0),
@@ -69,6 +83,10 @@ function getMovimientoBloqueante($partida) {
     return "";
 }
 
+/*
+ * Dada una raya y la matriz (tablero) de la partida, devolver la posicion
+ * 'XX' que evita la victoria del jugador. Un string vacío e.c.c.
+ */
 function getPosicionBloqueante($raya, $partida) {
     $opcion = "";
     $posicionBloqueante = "";
@@ -97,6 +115,8 @@ function getPosicionBloqueante($raya, $partida) {
     return "";
 }
 
+
+// Almacenar la ficha del jugador [O|X] en la partida.
 function setJugada($jugada, $jugador) {
     $partidasXML = getPartidasXML();
     foreach ($partidasXML->partida as $partida)

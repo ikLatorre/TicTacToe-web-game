@@ -1,7 +1,20 @@
 <?php
 
+/*
+ * Devuelve el 'id' de la nueva partida, el 'tipo' (facil, dificil o jugador) y la 'ficha'
+ * asignada al jugador [O|X]. 
+ * 
+ * El id se calcula de este modo: crear uno en base al id de la ultima partida almacenada
+ * si es contra la maquina, o contra jugador pero no hay ninguna disponible (las partidas
+ * jugador vs jugador estan disponibles si solo hay un jugador en ellas, que queda a la espera
+ * de que sa una un segundo jugador. Al unirse, no estará disponible para nadie más).
+ * Si hay una partida jugador vs jugador disponible, el 'id' devuelvo es el de esa partida.
+ * 
+ * En las partidas contra la maquina el jugador siempre usa la ficha 'O'.
+ * En las partidas contra un jugador el jugador que la crea siempre usa la ficha 'O', y el otro 'X'.
+ */
 function calcularIdPartida(){
-    $fich_partida = "partidas.xml";
+    $fich_partida = "partidas.xml"; 
     if (! file_exists ( $fich_partida ))
         $partidasXML = new SimpleXMLElement ('<?xml version="1.0" encoding="UTF-8"?>
             <partidas ult_id="partida0">
@@ -28,6 +41,11 @@ function calcularIdPartida(){
                  'idPartida' => substr($respuesta, 2));
 }
 
+/*
+ * Añadir la partida correspondiente en el XML dado.
+ * Devuelve el 'tipo' de partida (facil, dificil o jugador), la ficha 'O' correspondiente 
+ * a los que crean una partida del tipo que sea, y el 'id' de la misma.
+ */
 function crearPartida($partidasXML, $tipo){
     $id = (int)substr($partidasXML['ult_id'], 7) + 1;
     $nuevaPartida = $partidasXML->addChild('partida');
@@ -68,6 +86,11 @@ function crearPartida($partidasXML, $tipo){
     return $tipo . "O" . $id; //Asignar la ficha O y devolver id de partida.
 }
 
+/*
+ * Devuelve el 'tipo' jugador vs jugador, la ficha 'X' correspondiente a los que se
+ * unen a una partida vs jugador, y el 'id' de la partida, si encuentra una partida
+ * jugador vs jugador disponible (no terminada ni completa).
+ */
 function buscarPartidaJugador($partidasXML){
     foreach($partidasXML->partida as $partida)
         if($partida['tipo'] == "jugador" && $partida['terminada'] == "no"){
