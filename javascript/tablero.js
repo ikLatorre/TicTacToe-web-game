@@ -233,7 +233,7 @@ function volver() {
 function mostrarPartidaFinalizada() {
     document.getElementById("resultado").innerHTML = "<span>Partida finalizada</span>";
     document.getElementById("resultado2").innerHTML = "<input type='button' value='Volver a jugar' onclick='reiniciarPartida()'/><input type='button' value='Volver al men&uacute;' onclick='volver()'/>";
-    document.getElementById("partidaFinalizada").innerHTML = "si";
+    document.getElementById("partidaFinalizada").value = "si";
 }
 
 function getXHRObject(){
@@ -247,21 +247,17 @@ function getXHRObject(){
 
 function preguntarSalida(){    
    if (confirm("Est\u00e1 seguro de abandonar la partida?")){
-       mostrarPartidaFinalizada();
        bloquearTablero();
-       finalizarPartida();
        clearInterval(intervalConsultarTurno);
+       finalizarPartida();
+       mostrarPartidaFinalizada();
        alert("Has perdido la partida.");
    }
  }
  
  /*
-  * Cambiar estado de la partida como terminada en el XML. 
-  * 
-  * Este metodo (ademas de por 'preguntarSalida()' al darle al botón 'Abandonar partida') 
-  * es llamado tambien al cerrar la pestaña del navegador. En consecuencia, puede ser
-  * llamado terminada o no la partida, de modo que se comprueba con el campo 
-  * 'hidden' cuyo id es 'partidaFinalizada'. 
+  * Cambiar estado de la partida como terminada en el XML.
+  * Este metodo es llamado por 'preguntarSalida()' al darle al botón 'Abandonar partida'
   */
  function finalizarPartida(){
     var partidaFinalizada = document.getElementById("partidaFinalizada");
