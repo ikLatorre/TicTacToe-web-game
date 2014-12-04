@@ -264,14 +264,14 @@ function preguntarSalida(){
     var partidaFinalizada = document.getElementById("partidaFinalizada");
     if (partidaFinalizada.value == "no") {
         partidaFinalizada.value = "si";
-        enviarPeticionFinPartida();
+        enviarPeticionFinPartida(false);
     }
     return;
  }
  
- function enviarPeticionFinPartida(){
+ function enviarPeticionFinPartida(cerrandoPagina){
     var XHRObject = getXHRObject();
     var url = "finPartida.php?id=" + document.getElementById("idPartida").value;
-    XHRObject.open('GET', url, true);
+    XHRObject.open('GET', url, !cerrandoPagina);
     XHRObject.send();
  }
