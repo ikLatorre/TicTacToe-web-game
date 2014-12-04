@@ -245,6 +245,7 @@ function getXHRObject(){
     return XHRObject;
 }
 
+//Es llamado al pulsar el botón 'Abandonar partida'
 function preguntarSalida(){    
    if (confirm("Est\u00e1 seguro de abandonar la partida?")){
        bloquearTablero();
@@ -263,10 +264,14 @@ function preguntarSalida(){
     var partidaFinalizada = document.getElementById("partidaFinalizada");
     if (partidaFinalizada.value == "no") {
         partidaFinalizada.value = "si";
-        var XHRObject = getXHRObject();
-        var url = "finPartida.php?id=" + document.getElementById("idPartida").value;
-        XHRObject.open('GET', url, true);
-        XHRObject.send();
+        enviarPeticionFinPartida();
     }
     return;
+ }
+ 
+ function enviarPeticionFinPartida(){
+    var XHRObject = getXHRObject();
+    var url = "finPartida.php?id=" + document.getElementById("idPartida").value;
+    XHRObject.open('GET', url, true);
+    XHRObject.send();
  }

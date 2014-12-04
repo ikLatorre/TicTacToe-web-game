@@ -24,10 +24,7 @@ $datosInicializacion = calcularIdPartida();
                 }
             }; 
             window.onunload = function () { //Al cerrar la ventana.
-                var XHRObject = getXHRObject();
-                var url = "finPartida.php?id=" + document.getElementById("idPartida").value;
-                XHRObject.open('GET', url, false);
-                XHRObject.send();
+                enviarPeticionFinPartida();
             };
         </script>
     </head>
