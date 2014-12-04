@@ -18,12 +18,12 @@ $datosInicializacion = calcularIdPartida();
         <link href='http://fonts.googleapis.com/css?family=Fredoka+One' rel='stylesheet' type='text/css'/>
         <script type="text/javascript" src="javascript/tablero.js" ></script>
         <script type="text/javascript">
-            window.onbeforeunload = function () {
+            window.onbeforeunload = function () {  //Antes de cerrar la ventana. Aún se puede cancelar la operación.
                 if ((document.getElementById("partidaFinalizada")).value == "no") {
                     return "Hay una partida en curso.";
                 }
-            };  //Al cerrar la ventana
-            window.onunload = function () {
+            }; 
+            window.onunload = function () { //Al cerrar la ventana.
                 var XHRObject = getXHRObject();
                 var url = "finPartida.php?id=" + document.getElementById("idPartida").value;
                 XHRObject.open('GET', url, false);
