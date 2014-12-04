@@ -24,7 +24,9 @@ $datosInicializacion = calcularIdPartida();
                 }
             }; 
             window.onunload = function () { //Al cerrar la ventana.
-                enviarPeticionFinPartida();
+                if ((document.getElementById("partidaFinalizada")).value == "no") {
+                    enviarPeticionFinPartida(true);
+                }
             };
         </script>
     </head>
